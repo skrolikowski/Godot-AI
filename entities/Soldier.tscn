@@ -1,0 +1,130 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://scripts/Soldier.gd" type="Script" id=1]
+[ext_resource path="res://sprites/soldier1_gun.png" type="Texture" id=2]
+[ext_resource path="res://scripts/states/State.gd" type="Script" id=3]
+[ext_resource path="res://scripts/states/Idle.gd" type="Script" id=4]
+[ext_resource path="res://scripts/states/Search.gd" type="Script" id=5]
+[ext_resource path="res://scripts/states/Aim.gd" type="Script" id=6]
+
+[sub_resource type="CapsuleShape2D" id=1]
+
+custom_solver_bias = 0.0
+radius = 15.0
+height = 15.0
+
+[sub_resource type="CircleShape2D" id=2]
+
+custom_solver_bias = 0.0
+radius = 200.0
+
+[node name="Soldier" type="KinematicBody2D" index="0"]
+
+position = Vector2( 520, 300 )
+input_pickable = false
+collision_layer = 2
+collision_mask = 1
+collision/safe_margin = 0.08
+script = ExtResource( 1 )
+_sections_unfolded = [ "Collision", "Transform" ]
+__meta__ = {
+"_edit_group_": true
+}
+walk_speed = 100
+run_speed = 300
+
+[node name="Sprite" type="Sprite" parent="." index="0"]
+
+texture = ExtResource( 2 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." index="1"]
+
+position = Vector2( -8, 0 )
+shape = SubResource( 1 )
+_sections_unfolded = [ "Transform" ]
+
+[node name="Sensors" type="Node2D" parent="." index="2"]
+
+[node name="Sight" type="Area2D" parent="Sensors" index="0"]
+
+input_pickable = true
+gravity_vec = Vector2( 0, 1 )
+gravity = 98.0
+linear_damp = 0.1
+angular_damp = 1.0
+collision_layer = 2
+collision_mask = 3
+audio_bus_override = false
+audio_bus_name = "Master"
+_sections_unfolded = [ "Collision", "Transform" ]
+
+[node name="CollisionShape2D" type="CollisionPolygon2D" parent="Sensors/Sight" index="0"]
+
+build_mode = 0
+polygon = PoolVector2Array( 0, -32, 0, 32, 64, 96, 224, 160, 448, 160, 448, -160, 224, -160, 64, -96 )
+_sections_unfolded = [ "Transform" ]
+
+[node name="Sound" type="Area2D" parent="Sensors" index="1"]
+
+input_pickable = true
+gravity_vec = Vector2( 0, 1 )
+gravity = 98.0
+linear_damp = 0.1
+angular_damp = 1.0
+collision_layer = 2
+collision_mask = 8
+audio_bus_override = false
+audio_bus_name = "Master"
+_sections_unfolded = [ "Collision" ]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sensors/Sound" index="0"]
+
+shape = SubResource( 2 )
+
+[node name="CurrentState" type="Label" parent="." index="3"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = -50.0
+margin_right = 40.0
+margin_bottom = -36.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 4
+align = 3
+uppercase = true
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+_sections_unfolded = [ "Rect", "custom_fonts" ]
+
+[node name="States" type="Node" parent="." index="4"]
+
+script = ExtResource( 3 )
+
+[node name="Idle" type="Node" parent="States" index="0"]
+
+script = ExtResource( 4 )
+
+[node name="Search" type="Node" parent="States" index="1"]
+
+script = ExtResource( 5 )
+
+[node name="Aim" type="Node" parent="States" index="2"]
+
+script = ExtResource( 6 )
+
+[connection signal="body_entered" from="Sensors/Sight" to="." method="_on_Sight_body_entered"]
+
+[connection signal="body_exited" from="Sensors/Sight" to="." method="_on_Sight_body_exited"]
+
+[connection signal="area_entered" from="Sensors/Sound" to="." method="_on_Sound_area_entered"]
+
+[connection signal="area_exited" from="Sensors/Sound" to="." method="_on_Sound_area_exited"]
+
+
